@@ -4,6 +4,8 @@ import re
 import time
 import requests
 from typing import List, Optional, Dict, Set
+import json
+import csv
 
 GITHUB_API_URL = "https://api.github.com/users/{}"
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
@@ -105,15 +107,9 @@ def save_output(users: List[Dict], verbose: bool = True):
     with open("friends.html", "w", encoding="utf-8") as f_html:
         f_html.write(generate_html(users))
     with open("friends.json", "w", encoding="utf-8") as f_json:
-        import json
         json.dump([u['raw'] for u in users], f_json, indent=2)
-
-    log("Generated `friends.md`, `friends.html`, and `friends.json`.", "success", verbose)
-
-def save_csv(users: List[Dict], filename="friends.csv"):
-    import csv
-    with open(filename, "w", newline='', encoding="utf-8") as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=["username", "first_name", "last_name", "followers", "location", "html_url"])
+    with open("friends.csv", "w", newline='', encoding="utf-8") as f_csv:
+        writer = csv.DictWriter(f_csv, fieldnames=["username", "first_name", "last_name", "followers", "location", "html_url"])
         writer.writeheader()
         for u in users:
             writer.writerow({
@@ -124,6 +120,8 @@ def save_csv(users: List[Dict], filename="friends.csv"):
                 "location": u.get("location"),
                 "html_url": u["html_url"]
             })
+
+    log("Generated `friends.md`, `friends.html`, `friends.json`, and `friends.csv`.", "success", verbose)
 
 # ------------- Main -------------
 def main():
@@ -153,7 +151,10 @@ def main():
     log(f"Valid users: {len(valid_users)}", "success", args.verbose)
     log(f"Invalid or org accounts: {len(invalid_users)}", "warn", args.verbose)
 
-    sorted_users = sorted(valid_users, key=lambda u: (u['first_name'].lower(), u['last_name'].lower()))
+    if args.sort_by == "name":
+        sorted_users = sorted(valid_users, key=lambda u: (u['first_name'].lower(), u['last_name'].lower()))
+    elif args.sort_by == "followers":
+        sorted_users = sorted(valid_users, key=lambda u: -u['followers'])
     save_output(sorted_users, verbose=args.verbose)
 
 if __name__ == "__main__":
