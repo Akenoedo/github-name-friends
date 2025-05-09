@@ -6,7 +6,11 @@ import requests
 from typing import List, Optional, Dict, Set
 
 GITHUB_API_URL = "https://api.github.com/users/{}"
-HEADERS = {'Accept': 'application/vnd.github+json'}
+GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
+HEADERS = {
+    "Accept": "application/vnd.github+json",
+    "Authorization": f"Bearer {GITHUB_TOKEN}" if GITHUB_TOKEN else None
+}
 
 # ------------- Utility Functions -------------
 def log(msg: str, level: str = "info", verbose: bool = True):
@@ -27,33 +31,34 @@ def parse_input_line(line: str) -> Optional[str]:
     return None
 
 # ------------- GitHub Data --------------
-def get_user_data(username: str, retries: int = 3, delay: float = 1.5, verbose: bool = True) -> Optional[Dict]:
+def get_user_data(username: str, retries=3, delay=1.5, verbose=True) -> Optional[Dict]:
     for attempt in range(retries):
         try:
-            response = requests.get(GITHUB_API_URL.format(username), headers=HEADERS)
-            if response.status_code == 404:
-                return None
-            elif response.status_code == 403:  # Rate limited
-                log(f"Rate limit hit, sleeping for 60s", "warn", verbose)
-                time.sleep(60)
+            res = requests.get(GITHUB_API_URL.format(username), headers={k: v for k, v in HEADERS.items() if v})
+            if res.status_code == 403:
+                reset_time = int(res.headers.get("X-RateLimit-Reset", time.time() + 60))
+                wait = max(reset_time - time.time(), 1)
+                log(f"Rate limit hit. Sleeping for {int(wait)} seconds", "warn", verbose)
+                time.sleep(wait)
                 continue
-            elif response.status_code != 200:
-                log(f"Error fetching {username}: {response.status_code}", "error", verbose)
+            elif res.status_code == 404:
+                return None
+            elif res.status_code != 200:
+                log(f"Failed {username}: {res.status_code}", "error", verbose)
                 continue
 
-            data = response.json()
-            if data.get('type') != 'User':
-                return None
-            name = data.get('name') or ''
+            data = res.json()
+            name = data.get("name") or ""
             name_parts = name.strip().split()
-            first_name = name_parts[0] if name_parts else ''
-            last_name = " ".join(name_parts[1:]) if len(name_parts) > 1 else ''
             return {
-                'username': username,
-                'html_url': data.get('html_url'),
-                'first_name': first_name,
-                'last_name': last_name,
-                'raw': data
+                "username": username,
+                "html_url": data.get("html_url"),
+                "first_name": name_parts[0] if name_parts else "",
+                "last_name": " ".join(name_parts[1:]) if len(name_parts) > 1 else "",
+                "followers": data.get("followers", 0),
+                "location": data.get("location"),
+                "bio": data.get("bio"),
+                "raw": data
             }
         except requests.RequestException as e:
             log(f"Request error for {username}: {e}", "error", verbose)
@@ -105,12 +110,30 @@ def save_output(users: List[Dict], verbose: bool = True):
 
     log("Generated `friends.md`, `friends.html`, and `friends.json`.", "success", verbose)
 
+def save_csv(users: List[Dict], filename="friends.csv"):
+    import csv
+    with open(filename, "w", newline='', encoding="utf-8") as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=["username", "first_name", "last_name", "followers", "location", "html_url"])
+        writer.writeheader()
+        for u in users:
+            writer.writerow({
+                "username": u['username'],
+                "first_name": u['first_name'],
+                "last_name": u['last_name'],
+                "followers": u.get("followers"),
+                "location": u.get("location"),
+                "html_url": u["html_url"]
+            })
+
 # ------------- Main -------------
 def main():
     parser = argparse.ArgumentParser(description="Generate a list of GitHub friends with profile links.")
     parser.add_argument("-f", "--file", help="Input file containing GitHub usernames or profile URLs")
     parser.add_argument("usernames", nargs="*", help="GitHub usernames or profile URLs")
     parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output")
+    parser.add_argument("--include-orgs", action="store_true", help="Include organization accounts")
+    parser.add_argument("--sort-by", choices=["name", "followers"], default="name", help="Sort users by")
+    parser.add_argument("--out-dir", default=".", help="Directory to save output files")
     args = parser.parse_args()
 
     usernames = get_user_list(args.file, args.usernames)
